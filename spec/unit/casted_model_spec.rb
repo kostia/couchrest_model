@@ -324,6 +324,34 @@ describe CouchRest::Model::CastedModel do
         @toy3.errors.should be_empty
       end
     end
+
+    describe "on a casted model with ”auto validation” disabled" do
+      it "should validate casted model only on demand" do
+        @doc = WithoutAutoValidation.new
+        @doc.child = ValidateConditionally.new
+        @doc.should be_valid
+
+        @doc.child.should_validate = true
+        @doc.should_not be_valid
+
+        @doc.child.should_validate = false
+        @doc.should be_valid
+      end
+    end
+
+    describe "on a casted model collection with ”auto validation” disabled" do
+      it "should validate casted models only on demand" do
+        @doc = WithoutAutoValidationCollection.new
+        @doc.children << ValidateConditionally.new
+        @doc.should be_valid
+
+        @doc.children << ValidateConditionally.new
+        @doc.should_not be_valid
+
+        @doc.children.pop
+        @doc.should be_valid
+      end
+    end
   end
 
   describe "calling new? on a casted model" do
