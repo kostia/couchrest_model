@@ -181,7 +181,7 @@ module CouchRest
             property = Property.new(name, type, options)
             create_property_getter(property)
             create_property_setter(property) unless property.read_only == true
-            if property.type_class.respond_to?(:validates_casted_model)
+            if property.type_class.respond_to?(:validates_casted_model) and options.fetch(:auto_validation, true)
               validates_casted_model property.name
             end
             properties << property

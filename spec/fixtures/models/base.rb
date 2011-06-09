@@ -117,6 +117,25 @@ class WithGetterAndSetterMethods < CouchRest::Model::Base
   end
 end
 
+class ValidateConditionally < CouchRest::Model::Base
+  attr_accessor :should_validate
+  use_database TEST_SERVER.default_database
+  property(:name, String)
+  validates(:name, :presence => true)
+end
+
+class WithoutAutoValidation < CouchRest::Model::Base
+  use_database TEST_SERVER.default_database
+  property(:child, ValidateConditionally, :auto_validation => false)
+  validates(:child, :casted_model => true, :if => lambda { |args| args["child"].should_validate })
+end
+
+class WithoutAutoValidationCollection < CouchRest::Model::Base
+  use_database TEST_SERVER.default_database
+  property(:children, [ValidateConditionally], :default => [], :auto_validation => false)
+  validates(:children, :casted_model => true, :if => lambda { |args| args["children"].many? })
+end
+
 class WithAfterInitializeMethod < CouchRest::Model::Base
   use_database TEST_SERVER.default_database
 
